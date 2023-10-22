@@ -31,18 +31,23 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        //pulls the player down if they jump
         direction += Vector3.down * gravity * Time.deltaTime;
 
-        if (character.isGrounded)
+        if (character.isGrounded)//character controller built-in method
         {
+            //makes player stay grounded
             direction = Vector3.down;
 
-            if (Input.GetButton("Jump")) 
+            if (Input.GetButton("Jump"))//uses unity input manager
             {
+                //makes the player jump if it is grounded
+                //player cant double jump as this will not work of the player is not grounded
                 direction = Vector3.up * jumpForce;
             }
         }
 
+        //updates the player position
         character.Move(direction * Time.deltaTime);
     }
 }
