@@ -46,8 +46,17 @@ public class Player : MonoBehaviour
                 direction = Vector3.up * jumpForce;
             }
         }
-
         //updates the player position
         character.Move(direction * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //check if the player collides with a obstacles
+        if (other.gameObject.tag == "Obstacles") 
+        {
+            Debug.Log("Im hit!");
+            GameManager.Instance.GameOver();
+        }
     }
 }
