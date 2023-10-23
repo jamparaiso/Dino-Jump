@@ -374,6 +374,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialGameSpeed: 5
   gameSpeedIncrease: 0.1
+  gameOverText: {fileID: 2131427543}
+  retryButton: {fileID: 1519934206}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

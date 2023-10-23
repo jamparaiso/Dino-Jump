@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+
+using TMPro;
+
 using UnityEngine;
+using UnityEngine.UI;
 
 //manages game state
 
@@ -14,9 +15,15 @@ public class GameManager : MonoBehaviour
     public float gameSpeedIncrease = 0.1f;
     public float gameSpeed {  get; private set; }
 
+    public TextMeshProUGUI gameOverText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI hiScoreText;
+    public Button retryButton;
+
     private Player player;
     private Spawner spawner;
-    private Canvas canvas;
+
+    private float score;
 
     private void Awake()
     {
@@ -43,7 +50,6 @@ public class GameManager : MonoBehaviour
     {
         player = FindObjectOfType<Player>();
         spawner = FindObjectOfType<Spawner>();
-        canvas = FindObjectOfType<Canvas>();
 
         NewGame();
     }
@@ -58,22 +64,27 @@ public class GameManager : MonoBehaviour
             Destroy(obstacle.gameObject);
         }
 
-        //disable the game over screen
-        canvas.gameObject.SetActive(false);
+        //set the hi score
+        UpdateHiScore();
 
         //set initial game speed
         gameSpeed = initialGameSpeed;
         enabled = true;
+        score = 0f;
 
         player.gameObject.SetActive(true);
         spawner.gameObject.SetActive(true);
+
+        gameOverText.gameObject.SetActive(false);
+        retryButton.gameObject.SetActive(false);
 
     }
     
     //making this us public so that it can be called when game over
     public void GameOver()
     {
-        canvas.gameObject.SetActive(true);
+        gameOverText.gameObject.SetActive(true);
+        retryButton.gameObject.SetActive(true);
 
         gameSpeed = 0f;
         //disables this script
@@ -81,12 +92,32 @@ public class GameManager : MonoBehaviour
 
         player.gameObject.SetActive(false);
         spawner.gameObject.SetActive(false);
+
+        UpdateHiScore();
     }
 
     private void Update()
     {
         //game speed increase as time goes by
         gameSpeed += gameSpeedIncrease * Time.deltaTime;
+
+        score += gameSpeed * Time.deltaTime;
+        //round and convert the score to string, also adding a format that has 5 digits
+        //https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
+        scoreText.text = Mathf.RoundToInt(score).ToString("D5");
+    }
+    private void UpdateHiScore() 
+    {
+        //get the saved hi score if not found put a default value
+        float hiScore = PlayerPrefs.GetFloat("hiscore", 0);
+
+        if (score > hiScore)
+        {
+            hiScore = score;
+            PlayerPrefs.SetFloat("hiscore", hiScore); //update the hi score
+        }
+
+        hiScoreText.text = Mathf.RoundToInt(hiScore).ToString("D5");
     }
 
 }
