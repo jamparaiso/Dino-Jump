@@ -14,6 +14,7 @@ public class Ground : MonoBehaviour
 
     private void Update()
     {
+        //gets the speed
         float speed = GameManager.Instance.gameSpeed / transform.localScale.x;
 
         meshRenderer.material.mainTextureOffset += Vector2.right * speed * Time.deltaTime;
