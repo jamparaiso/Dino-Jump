@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] private AudioSource jumpSfx;
+
     private CharacterController character;
     private Vector3 direction;
 
@@ -41,11 +43,14 @@ public class Player : MonoBehaviour
 
             if (Input.GetButton("Jump"))//uses unity input manager
             {
+                jumpSfx.Play();
+
                 //makes the player jump if it is grounded
                 //player cant double jump as this will not work of the player is not grounded
                 direction = Vector3.up * jumpForce;
             }
         }
+
         //updates the player position
         character.Move(direction * Time.deltaTime);
     }
@@ -55,7 +60,6 @@ public class Player : MonoBehaviour
         //check if the player collides with a obstacles
         if (other.gameObject.tag == "Obstacles") 
         {
-            Debug.Log("Im hit!");
             GameManager.Instance.GameOver();
         }
     }

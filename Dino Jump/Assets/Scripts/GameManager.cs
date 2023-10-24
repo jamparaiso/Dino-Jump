@@ -1,7 +1,9 @@
 
+using System.Runtime.CompilerServices;
 using TMPro;
 
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 //manages game state
@@ -20,10 +22,13 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI hiScoreText;
     public Button retryButton;
 
+    [SerializeField] AudioSource deathSfx;
+    [SerializeField] AudioSource pointSfx;
+
     private Player player;
     private Spawner spawner;
-
     private float score;
+    private int scoreToInt;
 
     private void Awake()
     {
@@ -83,17 +88,19 @@ public class GameManager : MonoBehaviour
     //making this us public so that it can be called when game over
     public void GameOver()
     {
-        gameOverText.gameObject.SetActive(true);
-        retryButton.gameObject.SetActive(true);
+        deathSfx.Play();
+        UpdateHiScore();
 
         gameSpeed = 0f;
         //disables this script
         enabled = false;
 
+        gameOverText.gameObject.SetActive(true);
+        retryButton.gameObject.SetActive(true);
+
         player.gameObject.SetActive(false);
         spawner.gameObject.SetActive(false);
 
-        UpdateHiScore();
     }
 
     private void Update()
@@ -105,6 +112,31 @@ public class GameManager : MonoBehaviour
         //round and convert the score to string, also adding a format that has 5 digits
         //https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
         scoreText.text = Mathf.RoundToInt(score).ToString("D5");
+
+        scoreToInt = (int)Mathf.Round(score);
+
+        ScoreTracker(scoreToInt);
+    }
+
+    private void ScoreTracker(int score)
+    {    
+        bool triggerScoreSfx = false;
+
+        if (score > 0)
+        {//sfx will trigger every 100pts using modulo 
+            if (score % 100 == 0 && !triggerScoreSfx)
+            {
+                triggerScoreSfx = true;
+            }
+
+            if (triggerScoreSfx)
+            {
+                if (!pointSfx.isPlaying)
+                {
+                    pointSfx.Play();
+                }
+            }
+        }
     }
     private void UpdateHiScore() 
     {
@@ -119,5 +151,4 @@ public class GameManager : MonoBehaviour
 
         hiScoreText.text = Mathf.RoundToInt(hiScore).ToString("D5");
     }
-
 }
